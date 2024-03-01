@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: <name>-vs
+  namespace: <>
+spec:
+  gateways:                         # we specify the gateway like istio
+  - istio-system/default-gateway
+  hosts:                            # we need to specify url
+  - <name>.<something>.com
+  http:                             # path after url
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:                  # service where the traffic comes from
+        host: <service name>
+        port:
+          number: <service port>

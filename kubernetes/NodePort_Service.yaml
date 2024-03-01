@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-<environment>
+  namespace: <namespace>
+spec:
+  externalTrafficPolicy: Cluster      # internalTrafficPolicy applies to traffic that is sent to an internal destination (ClusterIP)
+  internalTrafficPolicy: Cluster      # while externalTrafficPolicy applies to traffic that is sent to an external destination (NodePorts, ExternalIPs, and LoadBalancer IPs).
+  ipFamilies: 
+  - IPv4
+  ipFamilyPolicy: SingleStack         #SingleStack: Single-stack service. The control plane allocates a cluster IP for the Service, using the first configured service cluster IP range.
+                                      #PreferDualStack: Allocates IPv4 and IPv6 cluster IPs for the Service.
+  ports:                              
+  - name: http 
+    nodePort: 31470                   # exposes a service externally to the cluster by means of the target nodes IP address and the NodePort. NodePort is the default setting if the port field is not specified.
+    port: 80                          # exposes the Kubernetes service on the specified port within the cluster. Other pods within the cluster can communicate with this server on the specified port 
+    protocol: TCP
+    targetPort: 3000                  # is the port on which the service will send requests to, that your pod will be listening on.
+  - name: https
+    nodePort: 31314
+    port: 443
+    protocol: TCP
+    targetPort: 3000
+  selector:                             #this will connect deplyment to service
+    app: webapp-<environment>
+  sessionAffinity: None
+  type: NodePort

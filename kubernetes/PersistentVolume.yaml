@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: <name>-pv
+  labels:                 # this will match container to pods
+    project: ""             # Name of the project
+    environment: ""         # Environment that we are running in like Prd, stg
+    criticality: ""         # criticallity of the project ex: 5 is high criticality
+    support-contact: ""     # contact name
+    owner: ""               # owner of the application
+spec:
+  capacity:
+    storage: 200Gi
+  nfs:
+    server:
+    path:
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: standard
+  mountOptions:
+    - hard
+    - nfsvers=3
+  volumeMode: Filesystem

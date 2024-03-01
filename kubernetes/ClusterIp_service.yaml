@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: <name>-service
+  namespace: <namespace>
+spec:
+  ports:
+  - name: kubernetes-port
+    port: 81                    # exposes the Kubernetes service on the specified port within the cluster. Other pods within the cluster can communicate with this server on the specified port 
+    protocol: TCP
+    targetPort: 8501            # is the port on which the service will send requests to, that your pod will be listening on.
+  selector:
+    app: <app>-<name>
+  type: ClusterIP
