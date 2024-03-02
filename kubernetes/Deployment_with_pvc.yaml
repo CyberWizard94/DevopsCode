@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:              #You can also use annotations to provide more information about a particular object.
+  labels:                 # this will match container to pods
+    project: ""             # Name of the project
+    environment: ""         # Environment that we are running in like Prd, stg
+    criticality: ""         # criticallity of the project ex: 5 is high criticality
+    support-contact: ""     # contact name
+    owner: ""               # owner of the application
+  name: <name>-deployment
+  namespace: <namespace>
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <name>
+      project: ""             # Name of the project
+      environment: ""         # Environment that we are running in like Prd, stg
+      criticality: ""         # criticallity of the project ex: 5 is high criticality
+      support-contact: ""     # contact name
+      owner: ""               # owner of the application
+  template:
+    metadata:
+      labels:                 # this will match container to pods
+      project: ""             # Name of the project
+      environment: ""         # Environment that we are running in like Prd, stg
+      criticality: ""         # criticallity of the project ex: 5 is high criticality
+      support-contact: ""     # contact name
+      owner: ""               # owner of the application
+  spec:
+    containers:
+    - command:                          # when container starts this command will run to allow root access to jupyter lab
+      - sh
+      - -c
+      - jupyter lab --allow-root
+      env:
+      - name: GRANT_SUDO
+        value: "yes"
+      - name: JUPYTER_ENABLE_LAB
+        value: "yes"
+      image: <artifactory>/jupyter:<tag>
+      name: <name>
+      ports:
+      - containerPort: 8888                          # this will be container port where service can listen to get metrics
+      resources:
+        limits:
+          cpu: 2
+          memory: 50Gi
+          nvidia.com/gpu: 1                         # we can assign gpu to pod using this step
+        requests:
+          cpu: 1
+          memory: 50 Gi
+      volumeMounts:                                 # this will mounts where we can fine volume data in container. 
+      - mountPath: /home/vinod/
+        subPath: vinod/
+        name: <name>-volume
+      - mountPath: /opt/
+        name: <name>-volume
+    securityContext:                               # this will set security for our application by making sure the user doesnot have root permissions
+      fsGroup: 1000
+    volumes:                                       # this where we specify the claim name to access the volume. we need to create PV and PVC befor doing this step
+    - name: <name>-volume
+      persistentVolumeClaim:
+        claimName: <claimname>-pvc
