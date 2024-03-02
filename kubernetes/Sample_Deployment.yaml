@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx
-  labels:
+  labels:                   # this will match pods to deployment
     project: ""             # Name of the project
     environment: ""         # Environment that we are running in like Prd, stg
     criticality: ""         # criticallity of the project ex: 5 is high criticality
@@ -10,31 +10,31 @@ metadata:
     owner: ""               # owner of the application
 spec:
   replicas: 1               # number of pods to be created
-  selector:
+  selector:                 # this will match pods to replicaset
     matchLabels:
       project: ""             # Name of the project
       environment: ""         # Environment that we are running in like Prd, stg
       criticality: ""         # criticallity of the project ex: 5 is high criticality
       support-contact: ""     # contact name
       owner: ""               # owner of the application
-  template:
-    metadata:
-      labels:
+  template:                   # container template
+    metadata:          
+      labels:                 # this will match container to pods
       project: ""             # Name of the project
       environment: ""         # Environment that we are running in like Prd, stg
       criticality: ""         # criticallity of the project ex: 5 is high criticality
       support-contact: ""     # contact name
       owner: ""               # owner of the application
     spec:
-      containers:
+      containers:             
       - name: nginx
-        image: <artifactory url>:<portnumber>/nginx
-        imagePullPolicy: Always
-        resources:
-          limits:
+        image: <artifactory url>:<portnumber>/nginx   # Docker image
+        imagePullPolicy: Always                       # this indicates if the image is present in the node or not the image will always pull when pod is created
+        resources:                                    # Resource specification for the contsiner
+          limits:                                     # maximimum resources the pod can use
             cpu: 2
             memory: 2Gi
-          requests:
+          requests:                                   # miminum resources the pod needs to start
             cpu: 1
             memory: 1Gi
-      restartPolicy: Always
+      restartPolicy: Always                            # means that the container will be restarted even if it exited with a zero exit code (i.e. successfully).
