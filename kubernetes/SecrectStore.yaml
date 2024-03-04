@@ -1,0 +1,19 @@
+apiVersion: external-secrects.io/v1alpha1
+kind: SecrectStore
+metadata:
+  name: vault-backend
+  namespace: <namespace>                     # to which namespace we want to create Namespace
+spec:
+  provider:
+    vault:
+      server: <vault url>
+      path: <path to the secrects to be synced>
+      version: "v2"
+      auth:
+        ldap:
+          username: <username>                 #LDAP username
+         # The secrect must already exist in the same namespace
+          secrectRef:
+            name: <name of secrect>
+            namespace: <namespace>
+            key: "password"

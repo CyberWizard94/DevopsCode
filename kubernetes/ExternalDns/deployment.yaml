@@ -1,0 +1,49 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: external-dns
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns
+  template:
+    metadata:
+      labels:
+        app: external-dns
+    specs:
+      serviceAccountName: external-dns
+      containers:
+      - name: external-dns
+        image: k8s.gcr.io/external-dns/external-dns:v0.10.2
+        args:
+        - --log-level=debug
+        - --source=service
+        - --source=istio-virtualservice
+        - --domain-filter=<k8s.vinod.com>
+        - --provider=<provider>                   # example infloblox
+        - --registry=txt                          # Create TXT records to safely manage non-empty hosted zones
+        - --txt-owner-id=<owner>                  # set corresponding owner name to the records managed by external dns
+        - --infloblox-grid-host=<host name>       # IP of infloblox grid host
+        - --infloblox-wapi-port=443               # (optional)infloblox WAPI port. The default is "443"
+        - --infloblox-wapi-version=2.10.5         # (optional) infloblox WAPI version. The default is "2.3.1"
+        - --no-infoblox-ssl-verify                # (optional) use --no-infoblox-ssl-verify to skip server certificate verification
+        - --infloblox-max-results=5000            # (optional) overwrite default 1k max return object size
+        - --interval=3m                           # synchronization polling intervals
+        env:
+        - name: EXTERNAL_DNS_INFLOBLOX_HTTP_POOL_CONNECTIONS
+          value: "10" #(optional) Infloblox WAPI request connection pool size. The default is "10"
+        - name: EXTERNAL_DNS_INFLOBLOX_HTTP_REQUEST_TIMEOUT
+          value: "60" #(optional) Infloblox WAPI request timeout in seconds. The default is "60"
+        - name: EXTERNAL_DNS_INFLOBLOX_USERNAME
+          valueFrom:
+            secrectRef:
+              name: external-dns
+              key: EXTERNAL_DNS_INFLOBLOX_WAPI_USERNAME
+        - name: EXTERNAL_DNS_INFLOBLOX_PASSWORD
+          valueFrom:
+            secrectRef:
+              name: external-dns
+              key: EXTERNAL_DNS_INFLOBLOX_WAPI_PASSWORD

@@ -1,0 +1,69 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: <name>-pvc
+  labels:                 # this will match container to pods
+    project: ""             # Name of the project
+    environment: ""         # Environment that we are running in like Prd, stg
+    criticality: ""         # criticallity of the project ex: 5 is high criticality
+    support-contact: ""     # contact name
+    owner: ""               # owner of the application
+  namespace: <namespace>
+spec:
+  accessModes:
+  - ReadWriteOnce           # this can be ReadWriteMany
+  resources:
+    requests:
+      storage: 5Gi
+  storageClassName: <storage class>    # we need to create storage class
+  volumeMode: Filesystem
+
+  # PV will get created automatically using storage class.
+
+  ---
+  # this storage class is for portworx provisioner
+
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+allowVolumeExpansion: true
+metadata:
+  name: portworx-shared
+parameters:
+  disable_io_profile_protection: "1"
+  priority_io: high
+  repl: "2"
+  sharedv4: "true"
+provisioner: pxd.portworx.com
+reclaimPolicy: Retain
+volumeBindingMode: Immediate
+
+---
+#Standard Storage class
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+parameters:
+  datastore: <datastorename>
+  fstype: ext4
+provisioner: kubernetes.io/vsphere-volume
+reclaimPolicy: Delete
+volumeBindingMode: Immediate
+---
+#CSI Storage class
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+allowVolumeExpansion: true
+metadata:
+  labels:
+    componenet-name: user-csi-storage-class-in-admin
+    component-version: 1.16.2-gke.28
+    package-deployment-name: package-deployment
+    package-deployment-namespace: <namespace>
+  name: csi
+parameters:
+  datastoreURL: <datastorename> 
+  fstype: ext4
+provisioner: csi.vsphere.vmware.com
+reclaimPolicy: Delete
+volumeBindingMode: Immediate

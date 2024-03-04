@@ -1,0 +1,18 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: deny-ext-egress-traffic
+  namespace: <namespace>
+spec:
+  podSelector: {}    #selects all the pods in namespace
+  policyTypes:
+  - Egress
+  egress:
+  - to:   # you can allow multiple cidr to allow traffic, also can provide list exception IP's from that cidr.
+    - ipBlock:
+        cidr: 10.0.0.0/8  # Allowing only internal all WDC Network
+#  - to:   
+#    - ipBlock:
+#        cidr: 10.0.0.0/8
+#        except:
+#          - 10.20.20.x/32

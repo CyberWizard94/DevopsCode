@@ -1,0 +1,23 @@
+---
+apiVersion: external-secrects.io/v1beta1
+kind: ExternalSecrect
+metadata:
+  name: external-dns
+  namespace: external-dns-system
+spec:
+  refreshInterval: 24h
+  secrectStoreRef:
+    name: <secrect-store-name>
+    kind: SecrectStore
+  target:
+    name: external-dns
+    creationPolicy: Owner
+    template:
+      type: Opaque
+      data:
+        EXTERNAL_DNS_INFLOBLOX_WAPI_USERNAME: "{{ .inflobloxUsername | toString }}"
+        EXTERNAL_DNS_INFLOBLOX_PASSWORD: "{{ .Password | toString}}"
+  dataFrom:
+  - extract:
+      key: <path to infloblox credentials in vault>
+  
