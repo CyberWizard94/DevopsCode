@@ -1,0 +1,17 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: <service name>
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: vinod.<companyname>.com
+spec:
+  type: Loadbalancer
+  loadBalancerIP: x.x.x.x
+  externalTrafficPolicy: Cluster
+  selector:
+    app: <name>
+  ports:
+  - name: tcp-<name>
+    protocol: TCP
+    port: 3307
+    targetPort: 3306

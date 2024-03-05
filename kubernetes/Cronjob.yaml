@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  metadata:
+  annotations:              #You can also use annotations to provide more information about a particular object.
+  labels:                 # this will match container to pods
+    project: ""             # Name of the project
+    environment: ""         # Environment that we are running in like Prd, stg
+    criticality: ""         # criticallity of the project ex: 5 is high criticality
+    support-contact: ""     # contact name
+    owner: ""               # owner of the application
+  name: <name>-deployment
+spec:
+  schedule: "0 1 * * *"
+  jobTemplate:
+    spec:
+      backoffLimit: 2               # backoffLimit to specify the number of retries before considering a Job as failed
+      completions: 1                
+      template:
+        metadata:
+          labels:                 # this will match container to pods
+            project: ""             # Name of the project
+            environment: ""         # Environment that we are running in like Prd, stg
+            criticality: ""         # criticallity of the project ex: 5 is high criticality
+            support-contact: ""     # contact name
+            owner: ""               # owner of the application
+      spec:
+        serviceAccountName: <service account>
+        containers:
+        - name: kubectl-pod
+          image: <artifactory>:<port>/bitnami/kubectl:latest
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "-c"]
+          args:
+            - date;
+              echo "Deleting Evicted Pod";
+              kubectl get po -A | grep Evicted | awk '{system ("kubectl -n " $1 " delete pod " $2 )}';
+              echo "Evicted pods are deleted sucessfully"
+        restartPolicy: OnFailure                 # The OnFailure restart policy will restart a container only if the container process exits with an error           

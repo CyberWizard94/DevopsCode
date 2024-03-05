@@ -1,0 +1,21 @@
+apiVersion: policy/v1
+kind: podDisruptionBudget
+metadata:
+  name: <name>
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: <app-name>
+
+
+### check the PDB object using kubectl ###
+
+# kubectl get pdb -n <namespace>
+
+# A PodDisruptionBudget has three feilds:
+#    1) A label selector .spec.selector to specify the set of pods to which it applies. This feild is required
+#    2) .spec.minAvailable which is a description of the number of pods from the set that must still be available after the eviction, even
+#        in the absence of the evicted pod. minAvailable can be either an absolute number or a percentage
+#    3) .spec.maxUnavailable which is a description of the number of pods from that set that can be unavailable after the eviction.
+#        it can be either an absolute number or a percentage
