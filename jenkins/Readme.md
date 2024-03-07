@@ -262,3 +262,113 @@ stages {
 
 Bitbucket Server Integration:
 *************************************************************
+The Bitbucket server integration plugin is the easiest way to connect jenkins to Bitbucket server
+
+
+Install Bitbucket Plugin
+*************************
+
+Install both the Bitbucket and Bitbucket branch source Plugin
+
+Configure Bitbucket Plugin
+***************************
+
+Create jenkins credentials with a service account with access to the Bitbucket projects and/or repositories()
+
+Input the WD Bitbucket Endpoint configuration in jenkins
+
+Select Manage hooks, set the credentials created earlier and leave the defaults foee the rest of the Manage hooks settings
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Bitbucket Endpoints
+
+Bitbucket Server
+
+Name: <name>
+Server URL: https://bitbucket.rs.com
+Server Version: 
+* call can merge
+* call changes api
+* Manage hooks
+credentials:
+Custom Jenkins hook URL:
+Webhook Implementation to use: Plugin
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Configure Jenkins Job
+**********************
+
+Add a Bitbucket source to your jenkins job
+
+Select the Bitbucket server created above, set the credentials to the same as above and enter the owner.
+
+The Owner is the shorthand project name that can be found in the Bitbucket URL and case does not matter
+
+Jenkins will then discover all repositories within the project and select the appropriate repository.
+
+Branch Sources
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Bitbucket
+
+Server: VD(https://bitbucket.as.com)
+Credentials:
+owner: vinod
+Repository Name: <repository name>
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Trigger the Job:
+*****************
+
+A jenkins build will now trigger on a push to remote and pull Request(PR) creation.
+The Jenkins job will post job status to the post hook create by jenkins in the repository
+This can be viewed on the branch and PR
+
+Email Notification Configuration:
+*********************************
+In order to be able to send E-mail notification, make sure plugin mailer(plugins.jenkins.io/mailer/) is installed. Mail server configuration must be updated in the Manage Jenkins page, 
+
+Configure System > E-mail Notification section
+
+Below are the details:
+
++++++++++++++++++++++++++++++++++++++
+SMTP server: asrelay.as.com
+Default user e-mail suffix: @as.com
++++++++++++++++++++++++++++++++++++++
+
+
+We can use multiple containers for multiple stages:
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+podTemplate(containers: [
+    containerTemplate(name: 'maven', image: 'maven:3.8.1-jdk-8', command: 'sleep', args: '99d'),
+    containerTemplate(name: 'golang', image: 'golang:1.16.5', command: 'sleep', args: '99d')
+  ]) {
+
+    node(POD_LABEL) {
+        stage('Get a Maven project') {
+            git 'https://github.com/jenkinsci/kubernetes-plugin.git'
+            container('maven') {
+                stage('Build a Maven project') {
+                    sh 'mvn -B -ntp clean install'
+                }
+            }
+        }
+
+        stage('Get a Golang project') {
+            git url: 'https://github.com/hashicorp/terraform.git', branch: 'main'
+            container('golang') {
+                stage('Build a Go project') {
+                    sh '''
+                    mkdir -p /go/src/github.com/hashicorp
+                    ln -s `pwd` /go/src/github.com/hashicorp/terraform
+                    cd /go/src/github.com/hashicorp/terraform && make
+                    '''
+                }
+            }
+        }
+
+    }
+}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
