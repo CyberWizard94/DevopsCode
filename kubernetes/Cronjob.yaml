@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   metadata:
   annotations:              #You can also use annotations to provide more information about a particular object.
-  labels:                 # this will match container to pods
+  labels:                   # this will match container to pods
     project: ""             # Name of the project
     environment: ""         # Environment that we are running in like Prd, stg
     criticality: ""         # criticallity of the project ex: 5 is high criticality
@@ -18,7 +18,7 @@ spec:
       completions: 1                
       template:
         metadata:
-          labels:                 # this will match container to pods
+          labels:                   # this will match container to pods
             project: ""             # Name of the project
             environment: ""         # Environment that we are running in like Prd, stg
             criticality: ""         # criticallity of the project ex: 5 is high criticality

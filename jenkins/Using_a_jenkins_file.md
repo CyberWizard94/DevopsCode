@@ -50,3 +50,106 @@ node {
     /* .. snip .. */
 }
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+We can use when with expression to check as below:
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+pipeline {
+    agent any
+
+    stages {
+        stage('Deploy') {
+            when {
+              expression {
+                currentBuild.result == null || currentBuild.result == 'SUCCESS'
+              }
+            }
+            steps {
+                sh 'make publish'
+            }
+        }
+    }
+}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Using environment variables:
+****************************
+
+Jenkins Pipeline exposes environment variables via global variable env, which is available from anywhere with a Jenkinsfile
+
+BUILD_ID: similar to buils number
+BUILD_NUMBER:
+BUILD_TAG:  String of jenkins-${JOB_NAME}-${BUILD_NUMBER}. Convenient to put into a resource file, a jar file, etc for easier identification
+BUILD_URL: The URL where the results of this build can be found (for example http://buildserver/jenkins/job/MyJobName/17/ )
+JENKINS_URL:
+JOB_NAME: 
+NODE_NAME:
+WORKSPACE:
+
+example using environment variable:
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+pipeline {
+    agent any
+    stages {
+        stage('Example') {
+            steps {
+                echo "Running ${env.BUILD_ID} on ${env.JENKINS_URL}"
+            }
+        }
+    }
+}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Setting Environment variables statically and dynamically:
+**********************************************************
+
+Statically:
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+pipeline {
+    agent any
+    environment {
+        CC = 'clang'
+    }
+    stages {
+        stage('Example') {
+            environment {
+                DEBUG_FLAGS = '-g'
+            }
+            steps {
+                sh 'printenv'
+            }
+        }
+    }
+}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Dynamically:
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+pipeline {
+    agent any
+    environment {
+        // Using returnStdout
+        CC = """${sh(
+                returnStdout: true,
+                script: 'echo "clang"'
+            )}"""
+        // Using returnStatus
+        EXIT_STATUS = """${sh(
+                returnStatus: true,
+                script: 'exit 1'
+            )}"""
+    }
+    stages {
+        stage('Example') {
+            environment {
+                DEBUG_FLAGS = '-g'
+            }
+            steps {
+                sh 'printenv'
+            }
+        }
+    }
+}
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
