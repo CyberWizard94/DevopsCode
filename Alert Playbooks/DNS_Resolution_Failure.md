@@ -51,6 +51,7 @@ kubectl -n kube-system edit configmap coredns
 
 Then add log in the corefile section per the example below:
 
+```
 apiVersion: v1
 kind: Configmap
 metadata:
@@ -64,6 +65,7 @@ data:
         health
         ..
     }
+```
 
 After changing it will take some time to be applied.
 
@@ -79,5 +81,7 @@ check clusterrole of system:coredns.
 
 Restart anetd and kubedns pods if you are using kube-dns:
 
+```
 kubectl rollout restart daemonset anetd -n kubesystem
 kubectl rollout restart deployment kube-dns -n kubesystem
+```

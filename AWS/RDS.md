@@ -43,7 +43,7 @@ b. Use Database Client or SDK: Use a database client tool or an SDK in your appl
 
 c. Example connection string format (this varies by database engine and programming language):
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 # Python example using psycopg2 for PostgreSQL
 import psycopg2
 
@@ -57,7 +57,7 @@ connection = psycopg2.connect(
 
 cursor = connection.cursor()
 # You can now execute SQL queries
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Step 4: Integrate RDS into Your Application
 

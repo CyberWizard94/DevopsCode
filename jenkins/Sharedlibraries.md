@@ -21,7 +21,7 @@ Directory structure:
 
 The directory structure of a Shared Library repository is as follows:
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 (root)
 +- src                     # Groovy source files
 |   +- org
@@ -34,7 +34,7 @@ The directory structure of a Shared Library repository is as follows:
 |   +- org
 |       +- foo
 |           +- bar.json    # static helper data for org.foo.Bar
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 The src directory should look like standard Java source directory structure. This directory is added to the classpath when executing Pipelines.
 
@@ -80,13 +80,13 @@ Default Version: master
 Retrival method: Modren SCM
 
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 @Library('my-shared-library') _
 /* Using a version specifier, such as branch, tag, etc */
 @Library('my-shared-library@1.0')
 /* Accesing multiple libraries with one statement */
 @Library(['my-shared-library', 'otherlib@abc1234']) _
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 
 Retrieval Method:
@@ -94,7 +94,7 @@ Retrieval Method:
 
 The best way to specify the SCM is using an SCM plugin which has been specifically updated to support a new API for checking out an arbitrary named version (Modern SCM option). As of this writing, the latest versions of the Git and Subversion plugins support this mode.
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 Global Pipeline Libraries:
 
 Library:
@@ -110,12 +110,12 @@ Retrival method: Modren SCM
          credentials:
          Behaviours: 
      Library Path(optional):
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Writing libraries:
 *****************
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 // src/org/foo/Point.groovy
 package org.foo
 
@@ -124,12 +124,12 @@ package org.foo
 class Point {
     float x,y,z
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Accessing Steps:
 ****************
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 // src/org/foo/Point.groovy
 
 package org.foo
@@ -139,20 +139,20 @@ def checkOutFrom(repo) {
 }
 
 return this
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Which can then be called from a Scripted Pipeline:
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 def z = new org.foo.Zot()
 z.checkOutFrom(repo)
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 This approach has limitations; for example, it prevents the declaration of a superclass.
 
 Alternately, a set of steps can be passed explicitly using this to a library class, in a constructor, or just one method:
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 package org.foo
 class Utilities implements Serializable {
   def steps
@@ -161,44 +161,44 @@ class Utilities implements Serializable {
     steps.sh "${steps.tool 'Maven'}/bin/mvn -o ${args}"
   }
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 When saving state on classes, such as above, the class must implement the Serializable interface. This ensures that a Pipeline using the class, as seen in the example below, can properly suspend and resume in Jenkins.
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 @Library('utils') import org.foo.Utilities
 def utils = new Utilities(this)
 node {
   utils.mvn 'clean package'
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 If the library needs to access global variables, such as env, those should be explicitly passed into the library classes, or methods, in a similar manner.
 
 Instead of passing numerous variables from the Scripted Pipeline into a library,
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 package org.foo
 class Utilities {
   static def mvn(script, args) {
     script.sh "${script.tool 'Maven'}/bin/mvn -s ${script.env.HOME}/jenkins.xml -o ${args}"
   }
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 The above example shows the script being passed in to one static method, invoked from a Scripted Pipeline as follows:
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 @Library('utils') import static org.foo.Utilities.*
 node {
   mvn this, 'clean package'
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Defining global variables:
 **************************
 
 Internally, scripts in the vars directory are instantiated on-demand as singletons. This allows multiple methods to be defined in a single .groovy file for convenience. For example:
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 def info(message) {
     echo "INFO: ${message}"
 }
@@ -206,18 +206,18 @@ def info(message) {
 def warning(message) {
     echo "WARNING: ${message}"
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 @Library('utils') _
 
 log.info 'Starting'
 log.warning 'Nothing to do!'
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Declarative Pipeline does not allow method calls on objects outside "script" blocks.
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 @Library('utils') _
 
 pipeline {
@@ -234,14 +234,14 @@ pipeline {
         }
     }
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Defining Declarative Pipelines:
 ********************************
 
 Starting with Declarative 1.2, released in late September, 2017, you can define Declarative Pipelines in your shared libraries as well. Here’s an example, which will execute a different Declarative Pipeline depending on whether the build number is odd or even:
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 // vars/evenOrOdd.groovy
 def call(int buildNumber) {
   if (buildNumber % 2 == 0) {
@@ -268,13 +268,13 @@ def call(int buildNumber) {
     }
   }
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 // Jenkinsfile
 @Library('my-shared-library') _
 
 evenOrOdd(currentBuild.getNumber())
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Only entire pipelines can be defined in shared libraries as of this time. This can only be done in vars/*.groovy, and only in a call method. Only one Declarative Pipeline can be executed in a single build, and if you attempt to execute a second one, your build will fail as a result.

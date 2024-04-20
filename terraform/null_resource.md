@@ -7,7 +7,7 @@ Terraform null_resource does not have a state which means it will be executed as
 
 Keep in mind when you execute $terraform apply command the null_resource will always execute it once.
 
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 #main.tf
 
 provider "aws" {
@@ -29,7 +29,7 @@ resource "null_resource" "null_resource_simple" {
     command = "echo Hello World"
   }
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 2. What is the trigger inside null_resource?
 
@@ -40,7 +40,7 @@ trigger will only work when it detects the change in the key-value pair
 trigger can only work once if key-value is changed once but on the other hand if the key-value pair changes its value every time it will execute the every time you run $terraform apply command.
 
 Example-
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 #main.tf 
 
 provider "aws" {
@@ -68,7 +68,7 @@ resource "null_resource" "null_resource_simple" {
   }
 }
 
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Use Case 1 - null_resource with local provisioner
 
@@ -77,7 +77,7 @@ n the previous section, we have seen a very basic example of local-exec provisio
 Here are a few examples -
 
 1. Run multiple commands- The local-exec provisioner is not limited to running single command but instead, you can run multiple commands within local-exec provisioner using the null_resource.
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 resource "null_resource" "null_resource_simple" {
   
   triggers = {
@@ -90,7 +90,7 @@ resource "null_resource" "null_resource_simple" {
     EOT
   }
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Use Case 2 - null_resource with remote provisioner
 The second use case for null_resource is to use it with remote_provisioner. With the help of remote_provisioner you can execute commands on the remote machine. To explain a bit further we are going to take an example in which -
@@ -101,7 +101,7 @@ Use the remote-exec provisioner to connect remote EC2 instance
 After a successful connection create a txt file.
 Here is how the terraform code would look like -
 
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 resource "aws_instance" "ec2_example" {
   ami           = "ami-0767046d1677be5a0"
   instance_type =  "t2.micro"
@@ -132,7 +132,7 @@ resource "null_resource" "null_resource_with_remote_exec" {
   }
 
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Use Case 3 - Using trigger to execute null_resource everytime
 
@@ -140,7 +140,7 @@ In the final use case, we are going to see how to execute trigger every time ins
 
 Here is a Terraform code example -
 
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 # main.tf
 
 provider "aws" {
@@ -168,5 +168,5 @@ resource "null_resource" "null_resource_simple" {
     command = "echo Hello World"
   }
 } 
-++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 time() - Time function is just an example in which we always get a different value and due to which the local-exec provisioner gets executed all the time.

@@ -12,9 +12,9 @@ Sonarqube-architecture(https://scm.thm.de/sonar/documentation/architecture/archi
 Deploying SonarQube:
 ********************
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 helm upgrade --install dev-sonarqube sonarqube --version 8.0.0+463 -n <namespace> -v ./values.yaml
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 
 Verify Deployment:
@@ -22,9 +22,9 @@ Verify Deployment:
 
 Once the chart has been deployed, check that the Dask scheduler and workers are up and running
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 kubectl get pods -n <sonar-namespace>
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Expose Sonarqube:
 
@@ -34,7 +34,7 @@ kubectl get svc -n <sonar-namespace>
 
 Virtual service YAML:
 
-+++++++++++++++++++++++++++++++
+```
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -54,7 +54,7 @@ spec:
         host: <service name>
         port:
           number: <service port>
-+++++++++++++++++++++++++++++++++++
+```
 
 kubectl apply -f expose-sonarqube.yaml -n <sonar-namespace>
 
@@ -93,11 +93,11 @@ Add SonarQube Scanner to jenkins:
 
 Browse to your jenkins URL, then Manage Jenkins/Global Tool configuration and SonarQube Scanner installation
 
-+++++++++++++++++++++++++++++++++++
+```
 SonarQube Scanner:
 Name: Sonarqubescanner
 * Install automatically
-+++++++++++++++++++++++++++++++++++
+```
 
 Create Jenkins Pipeline job:
 **********************************
@@ -106,7 +106,7 @@ browse to your Jenkins URL, then create pipeline job for the respective build to
 SonarScanner:
 **********************************
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 node{
     stage('SCM') {
         git 'https://github.com/SonarSource/sonar-scanning-example.git'
@@ -118,11 +118,11 @@ node{
         }
     }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 SonarScanner for Gradle: 
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 node{
     stage('SCM') {
         git 'https://github.com/foo/bar.git'
@@ -134,11 +134,11 @@ node{
         }
     }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 SonarScanner for Maven: 
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 node{
     stage('SCM') {
         git 'https://github.com/foo/bar.git'
@@ -151,11 +151,11 @@ node{
         }
     }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 SonarScanner for Ant:
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 node{
     stage('SCM') {
         git 'https://github.com/foo/bar.git'
@@ -168,11 +168,11 @@ node{
         }
     }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 SonarScanner for .NET:
  
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 node{
     stage('SCM') {
         git 'https://github.com/foo/bar.git'
@@ -187,7 +187,7 @@ node{
         }
     }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 
 trigger jenkins job and go to sonarqube Url to check the results.

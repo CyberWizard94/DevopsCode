@@ -25,7 +25,7 @@ Examples of lambda function:
 
 1. Ec2 instance stop
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 import boto3
 region = 'us-west-2'
 instances = ['instance1', 'instance2']
@@ -34,6 +34,6 @@ ec2 = boto3.client('ec2', region_name=region)
 def lambda_handler(event, context):
     ec2.stop_instance(InstanceIds=instances)
     print('stopped your instances:' + str(instances))
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 2. Tag 

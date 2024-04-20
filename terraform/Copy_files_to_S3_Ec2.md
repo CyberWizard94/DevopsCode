@@ -20,14 +20,14 @@ Using the credentials file
 To use the AWS credentials file inside your Terraform file, you must install the AWS CLI beforehand.
 Here is a Terraform code snippet:
 
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 # Note - Please replace the path with your credentials files
 
 provider "aws" {
   region                   = "eu-central-1"
   shared_credentials_files = ["/<path>/<to-aws-credentials>/.aws/credentials"]
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 
 Hard Code Access Key and Secret Access key:
@@ -36,7 +36,7 @@ Hard Code Access Key and Secret Access key:
 The second way would be to hard code the access key and secret key, but I would not recommend this approach because, with this approach, your AWS credentials might end up in the versioning system.
 Here is the example code snippet
 
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 # Replace the values with your AWS credentials
 
 provider "aws" {
@@ -44,19 +44,19 @@ provider "aws" {
   access_key = <PLACE-YOUR-ACCESS-KEY>
   secret_key = <PLACE-YOUR-SECRET-KEY>
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Export AWS Credentials as Environment Variables:
 ************************************************
 
 The third way would be to export the AWS credentials as environment variables Use the following command to export the AWS credentials
 
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 # Replace the values with your AWS credentials
 
 export AWS_ACCESS_KEY_ID="your_access_key"
 export AWS_SECRET_ACCESS_KEY="your_secret_key"
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 3. Setup an EC2 instance, a security group, and SSH key pair resources.
 
@@ -69,7 +69,7 @@ Step 2- Resource block for Security Group
 Step 3- Setup SSH Key Pair & private key
 
 
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 # Step 1 - Resource block for EC2 instance
 resource "aws_instance" "ec2_example" {
 
@@ -115,7 +115,7 @@ resource "aws_key_pair" "deployer" {
   key_name   = "aws_key"
   public_key = "<PLACE-YOUR-PUBLIC-KEY>"
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 4. Use file provisioner to upload the file to EC2
 
@@ -125,7 +125,7 @@ Let's update the code snipped from the Step-3 and add the file provisioner to th
 
 Here is the code snippet:
 
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 # Step 1: Resource block for EC2 instance
 # File provisioner: Added the file provisioner
 # To use the file provisioner, you need to specify the following:
@@ -192,7 +192,7 @@ resource "aws_key_pair" "deployer" {
   key_name   = "aws_key"
   public_key = "<PLACE-YOUR-PUBLIC-KEY>"
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 5.1 Uploading multiple files to an S3 bucket
 
@@ -200,7 +200,7 @@ Taking the previous example where we have uploaded only a single file to the S3 
 
 for_each - For uploading more than one file, we must use for_each loop inside the aws_s3_bucket_object resource block.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 resource "aws_s3_bucket_object" "object1" {
   for_each = fileset("uploads/", "*")
   bucket = aws_s3_bucket.spacelift-test1-s3.id
@@ -208,7 +208,7 @@ resource "aws_s3_bucket_object" "object1" {
   source = "uploads/${each.value}"
   etag = filemd5("uploads/${each.value}")
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 6. Initialize and Apply the Terraform configuration.
 
@@ -216,7 +216,7 @@ Once you have completed your terraform stack, it is time to initialize and apply
 
 Use the following terraform command from the terminal:
 
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```
 # Initialize terraform
 terraform init
 
@@ -225,4 +225,4 @@ terraform plan
 
 # Apply the changes
 terraform apply
-+++++++++++++++++++++++++++++++++++++++++++++++++
+```

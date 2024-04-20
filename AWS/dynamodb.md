@@ -29,15 +29,15 @@ step 2: Use DynamoDB in Your Application
 
 Ensure you have boto3 installed for Python (or the appropriate SDK for your programming language):
 
-++++++++++++++++++++
+```
 pip install boto3
-++++++++++++++++++++
+```
 
 Configure your AWS credentials (usually in ~/.aws/credentials for AWS CLI or by using AWS SDK configuration in your application).
 
 The following Python example demonstrates how to create a new item, retrieve an item, and query items by the primary key in a DynamoDB table.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 import boto3
 
 # Initialize a DynamoDB client
@@ -70,7 +70,7 @@ response = table.query(
 items = response['Items']
 print(items)
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Remember to replace 'YourTableName', 'PrimaryKey', and other placeholders with your actual table name and key attributes.
 

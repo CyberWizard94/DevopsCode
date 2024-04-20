@@ -9,7 +9,7 @@ docker-compose.yml file
 The compose file is a YML file defining services, networks, and volumes for a Docker container. There are several versions of the compose file format available – 1, 2, 2.x, and 3.x.
 
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 version: '3'
 services:
   redis:
@@ -75,7 +75,7 @@ secrets:
     file: db/password.txt
 networks:
   spring-postgres:
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Build:
 ********
@@ -92,11 +92,11 @@ dockerfile sets an alternate Dockerfile. A relative path is resolved from the bu
 
 When set, dockerfile_inline attribute is not allowed and Compose rejects any Compose file having both set.
 
-
+```
 build:
   context: .
   dockerfile: webapp.Dockerfile
-
+```
 
 dockerfile_inline:
 *******************
@@ -105,13 +105,14 @@ dockerfile_inline defines the Dockerfile content as an inlined string in a Compo
 
 Use of YAML multi-line string syntax is recommended to define the Dockerfile content:
 
-
+```
 build:
   context: .
   dockerfile_inline: |
     FROM baseimage
     RUN some command 
-   
+```
+
 args:
 *******
 
@@ -119,7 +120,9 @@ args define build arguments, i.e. Dockerfile ARG values.
 
 args can be set in the Compose file under the build key to define GIT_COMMIT. args can be set as a mapping or a list:
 
+```
 build:
   context: .
   args:
     GIT_COMMIT: cdc3b19
+```

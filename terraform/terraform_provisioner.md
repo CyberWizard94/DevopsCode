@@ -30,19 +30,19 @@ Let us take an example to understand how to implement terraform file provisioner
 How to write your file provisioner
 How to specify source and destination` for copying/transferring the file.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provisioner "file" {
     source      = "/home/rahul/Jhooq/keys/aws/test-file.txt"
     destination = "/home/ubuntu/test-file.txt"
 } 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 In the above code snippet, we are trying to copy file test-file.txt from its source =/home/rahul/Jhooq/keys/aws/test-file.txt to its destination =/home/ubuntu/test-file.txt
 
 
 Here is the complete terraform script which demonstrates on how to use terraform file provisioner
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provider "aws" {
    region     = "eu-central-1"
    access_key = "AKIATQ37NXBxxxxxxxxx"
@@ -103,7 +103,7 @@ resource "aws_key_pair" "deployer" {
   key_name   = "aws_key"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDbvRN/gvQBhFe+dE8p3Q865T/xTKgjqTjj56p1IIKbq8SDyOybE8ia0rMPcBLAKds+wjePIYpTtRxT9UsUbZJTgF+SGSG2dC6+ohCQpi6F3xM7ryL9fy3BNCT5aPrwbR862jcOIfv7R1xVfH8OS0WZa8DpVy5kTeutsuH5FMAmEgba4KhYLTzIdhM7UKJvNoUMRBaxAqIAThqH9Vt/iR1WpXgazoPw6dyPssa7ye6tUPRipmPTZukfpxcPlsqytXWlXm7R89xAY9OXkdPPVsrQA0XFQnY8aFb9XaZP8cm7EOVRdxMsA1DyWMVZOTjhBwCHfEIGoePAS3jFMqQjGWQd rahul@rahul-HP-ZBook-15-G2"
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Here is one thing to note - You need to generate the ssh keys to connect to your EC2 instance running in the AWS cloud. You can use the command ssh-keygen -t aws_key to generate the key-pair. You can read this blog post on Terraform how to do SSH in AWS EC2 instance?
 
@@ -114,24 +114,24 @@ Supporting arguments for file provisioners:
 Here are some examples where I have used relative path for the source arguments -
 
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provisioner "file" {
     source      = "../../../Jhooq/keys/aws/test-file.txt"
     destination = "/home/ubuntu/test-file.txt"
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 2. content - The content argument is useful when you do not want to copy or transfer the file instead you only want to copy the content or string.
 
 Here is an example of a content resource argument -
 
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provisioner "file" {
     content     = "I want to copy this string to the destination file server.txt"
     destination = "/home/ubuntu/server.txt"
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 The above provisioner script will copy the string I want to copy this string to the destination file server.txt to the destination file /home/ubuntu/server.txt
 
@@ -146,17 +146,17 @@ So local-exec provisioner is never used to perform any kind task on the remote m
 
 Example - Consider the following example where we are trying to create a file hello-jhooq.txt on the local machine
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provisioner "local-exec" {
     command = "touch hello-jhooq.txt"
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 In the command section, we can write a bash script. In the above example, I am trying to create a hello-jhooq.txt file on the local machine.
 
 Here is the complete terraform script for the above example -
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provider "aws" {
    region     = "eu-central-1"
    access_key = "AKIATQ37NXBxxxxxxxxx"
@@ -176,7 +176,7 @@ resource "aws_instance" "ec2_example" {
     command = "touch hello-jhooq.txt"
   }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Supporting arguments for local provisioners:
 *********************************************
@@ -189,11 +189,11 @@ Always consider command as shell script executioner because whatever you pass in
 
 You can write even mention the relative path of your shell script location and pass it the command.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provisioner "local-exec" {
     command = "touch hello-jhooq.txt"
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 2. working_dir - Here are the key facts about the working_dir arguments
 
@@ -210,25 +210,25 @@ If you do not specify the interpreter argument the default will be taken into co
 
 Example 1: - Here I am trying to specify the interpreter as perl, so anything which I mention inside the command argument will be executed as perl command
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 resource "null_resource" "example1" {
   provisioner "local-exec" {
     command = "open WFH, '>hello-world.txt' and print WFH scalar localtime"
     interpreter = ["perl", "-e"]
   }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Example 2: - In this example I will be using the PowerShell interpreter to write a string to a file
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 resource "null_resource" "example2" {
   provisioner "local-exec" {
     command = "This will be written to the text file> completed.txt"
     interpreter = ["PowerShell", "-Command"]
   }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 4. environment - This is again an optional parameter that can be passed alongside the command argument.
 
@@ -237,7 +237,7 @@ With the help of environment you can define or set environment variables that ca
 environment arguments are generally the key-value pair and you can define as many variables as you can.
 
 Here is an example of the environment arguments
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 provisioner "local-exec" {
     command = "echo $VAR1 $VAR2 $VAR3 >> my_vars.txt"
@@ -248,7 +248,7 @@ provisioner "local-exec" {
       VAR3 = "my-value-3"
     }
   }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 3. remote-exec provisioner
 
@@ -259,14 +259,14 @@ As we discussed ssh and winrm for secure data transfer in local-exec, here also 
 Let us take an example of how to implement the remote-exec provisioner -
 
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provisioner "remote-exec" {
     inline = [
       "touch hello.txt",
       "echo helloworld remote provisioner >> hello.txt",
     ]
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 In the above example -
 
@@ -275,7 +275,7 @@ We are going to write the message helloworld remote provisioner inside the hello
 Everything will happen on the remote machine
 Here is the complete example of remote-exec -
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provider "aws" {
    region     = "eu-central-1"
    access_key = "AKIATQ37NXBxxxxxxxxx"
@@ -339,7 +339,7 @@ resource "aws_key_pair" "deployer" {
   key_name   = "aws_key"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDbvRN/gvQBhFe+dE8p3Q865T/xTKgjqTjj56p1IIKbq8SDyOybE8ia0rMPcBLAKds+wjePIYpTtRxT9UsUbZJTgF+SGSG2dC6+ohCQpi6F3xM7ryL9fy3BNCT5aPrwbR862jcOIfv7R1xVfH8OS0WZa8DpVy5kTeutsuH5FMAmEgba4KhYLTzIdhM7UKJvNoUMRBaxAqIAThqH9Vt/iR1WpXgazoPw6dyPssa7ye6tUPRipmPTZukfpxcPlsqytXWlXm7R89xAY9OXkdPPVsrQA0XFQnY8aFb9XaZP8cm7EOVRdxMsA1DyWMVZOTjhBwCHfEIGoePAS3jFMqQjGWQd rahul@rahul-HP-ZBook-15-G2"
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Supporting arguments for remote provisioners:
 
@@ -347,14 +347,14 @@ Supporting arguments for remote provisioners:
 
 Here is an example in which I have added two separate commands -
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 provisioner "remote-exec" {
     inline = [
       "touch hello.txt",
       "echo helloworld remote provisioner >> hello.txt",
     ]
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 2. script - It can be used to copy the script from local machine to remote machine and it always contains a relative path.
 
@@ -378,7 +378,7 @@ As with chef we are handling the remote servers so every communication is happen
 
 Here is an example code snippet of the chef provisioner -
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 resource "aws_instance" "chef_provisioner_example" {
 
   provisioner "chef" {
@@ -410,5 +410,5 @@ resource "aws_instance" "chef_provisioner_example" {
     ssl_verify_mode = ":verify_peer"
   }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 

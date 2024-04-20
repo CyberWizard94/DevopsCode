@@ -64,7 +64,7 @@ kubectl get svc -n <namespace>
 Virtual service yaml file:
 ****************************
 
-+++++++++++++++++++++++++++++++
+```
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
@@ -84,7 +84,7 @@ spec:
         host: <service name>
         port:
           number: <service port>
-+++++++++++++++++++++++++++++++++++
+```
 
 kubectl apply -f expose-jenkins.yaml -n <namespace>
 
@@ -92,12 +92,12 @@ Adding New plugins through values file:
 *******************************************
 Master image already has some plugins pre-installed. In case if you require additional plugins to be installed during jenkins deployment this can be done by passing it in values.yaml file like below
 
-++++++++++++++++++++++++++++++++++++++++
+```
 controller:
   installPlugins:
     - email-ext:2.83
     - ant:1.11
-+++++++++++++++++++++++++++++++++++++++
+```
 
 Configuring the AD authentication:
 ***************************************
@@ -109,17 +109,17 @@ Below are the steps:
 
 1. create kubernetes secrect with data for AD username, password and AD group that needs access for jenkins.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 kubectl create secrect generic jenkins-ad-bind-auth --from-literal=bindpasswd=<password> --from-literal=binduser=<User Name> --from-literal=adgroup=<AD_GROUP> -n <namespace> -o yaml --dry-run=client > jenkins-ad-bind-auth-secrect.yaml
 
 kubectl apply -f jenkins-ad-bind-auth-secrect.yaml -n <namespace>
 
 kubectl get secrect jenkins-ad-bind-auth -n <namespace>
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 2. update values.yaml file to use secrect created in earlier step in configscript for AD server configuration and Project Matrix Based authorization Streategy(plugins.jenkins.io/matrix-auth/#documentation).
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 controller:
   additionalExistingSecrets:
       - name: jenkins-ad-bind-auth
@@ -155,14 +155,14 @@ controller:
                 - "job/Read:authenticated"
                 - "Overall/Read:authenticated"
                 - "View/Read:anonymous"
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Create Sample Pipeline Job:
 ****************************
 
 Artifactory login credentials should be base64 encoded.
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 echo -n "<username@ad.shared>:<password>" | base64
 
 # generate docker auth secrect which is required push the image to private registery. kaniko uses this credentials
@@ -182,7 +182,7 @@ cat artifactory-config
 kubectl create secret generic artifact-jenkins-config --from-file=config.json=artifact-config -n <namespace> -o yaml --dry-run=client > artifact-jenkins-config-secrect.yaml
 
 kubectl apply -f artifact-config-secrect.yaml -n <namespace>
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Create credentialID to use in pipeline for Git functionality:
 *************************************************************
@@ -200,7 +200,7 @@ JenkinsFile:
 Below jenkinsFile uses kaniko(github.com/GoogleContainerTools/kaniko) to build the image and push the image to artifactory. Artifactory credentials are passed as a secrect to kaniko container.
 The workspace volume for agent should be used as dynamic PVC as by default reclaim policy is set to Delete.
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 pipeline{
     agent {
         kubernetes {
@@ -258,7 +258,7 @@ stages {
         }
     }
 }
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Bitbucket Server Integration:
 *************************************************************
@@ -279,7 +279,7 @@ Input the WD Bitbucket Endpoint configuration in jenkins
 
 Select Manage hooks, set the credentials created earlier and leave the defaults foee the rest of the Manage hooks settings
 
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 Bitbucket Endpoints
 
 Bitbucket Server
@@ -293,8 +293,7 @@ Server Version:
 credentials:
 Custom Jenkins hook URL:
 Webhook Implementation to use: Plugin
-
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Configure Jenkins Job
 **********************
@@ -308,14 +307,14 @@ The Owner is the shorthand project name that can be found in the Bitbucket URL a
 Jenkins will then discover all repositories within the project and select the appropriate repository.
 
 Branch Sources
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 Bitbucket
 
 Server: VD(https://bitbucket.as.com)
 Credentials:
 owner: vinod
 Repository Name: <repository name>
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 
 Trigger the Job:
 *****************
@@ -332,15 +331,15 @@ Configure System > E-mail Notification section
 
 Below are the details:
 
-+++++++++++++++++++++++++++++++++++++
+```
 SMTP server: asrelay.as.com
 Default user e-mail suffix: @as.com
-+++++++++++++++++++++++++++++++++++++
+```
 
 
 We can use multiple containers for multiple stages:
 
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
 podTemplate(containers: [
     containerTemplate(name: 'maven', image: 'maven:3.8.1-jdk-8', command: 'sleep', args: '99d'),
     containerTemplate(name: 'golang', image: 'golang:1.16.5', command: 'sleep', args: '99d')
@@ -371,4 +370,4 @@ podTemplate(containers: [
 
     }
 }
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+```
